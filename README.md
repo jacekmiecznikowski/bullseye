@@ -15,7 +15,7 @@ npm run preview
 Można również uruchomić statyczne pliki przez dowolny serwer HTTP. Vite 8 buduje wersję produkcyjną do dist/.
 
 ## Zasady
-7 pytań, 3 sekundy na przeczytanie; tryb Radar: 25 s i poziomy 10/15/30/60/85/100; tryb Nisza: 20 s i 10/30/55/85/100. Pierwsza rozpoznana odpowiedź kończy rundę. Niepoprawne próby można ponawiać do upływu czasu. Maksimum 700 pkt. W treningu zegar jest wyłączony.
+7 pytań, 3 sekundy na przeczytanie; tryb Radar: 25 s i poziomy 10/15/30/60/100; tryb Nisza: 20 s i 10/30/55/85/100. Pierwsza rozpoznana odpowiedź kończy rundę. Niepoprawne próby można ponawiać do upływu czasu. Maksimum 700 pkt. W treningu zegar jest wyłączony.
 Codzienne zestawy i archiwum liczone według Europe/Warsaw. Dzienna seria rośnie wyłącznie za ukończony zestaw dnia (nie za archiwum). Wyniki są przechowywane na urządzeniu.
 Radar wyników: siedem kierunków, po jednym na pytanie; im bliżej środka, tym rzadsze trafienie. Tabele rozwiązań pokazują poziomy redakcyjne, a nie realne udziały innych osób.
 
