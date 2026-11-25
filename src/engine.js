@@ -1,4 +1,4 @@
-export const rules={radar:{label:"Radar",seconds:25,points:[10,15,30,60,100]},nisza:{label:"Nisza",seconds:20,points:[10,30,55,85,100]}};
+export const rules={radar:{label:"Klasyczny",seconds:25,points:[10,15,30,60,100]},nisza:{label:"Nisza",seconds:20,points:[10,30,55,85,100]}};
 export function normalize(s){return s.toLocaleLowerCase("pl").normalize("NFD").replace(/\p{M}/gu,"").replace(/ł/g,"l").replace(/[^\p{L}\p{N}]+/gu," ").trim()}
 export function answer(q,s){return q.answers.find(a=>a.names.some(n=>normalize(n)===normalize(s)))}
 export function score(a,mode){return a?rules[mode].points[a.tier]:0}
