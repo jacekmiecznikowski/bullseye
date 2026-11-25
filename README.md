@@ -15,9 +15,9 @@ npm run preview
 Można również uruchomić statyczne pliki przez dowolny serwer HTTP. Vite 8 buduje wersję produkcyjną do dist/.
 
 ## Zasady
-7 pytań, 3 sekundy na przeczytanie; tryb Radar: 25 s i poziomy 10/15/30/60/100; tryb Nisza: 20 s i 10/30/55/85/100. Pierwsza rozpoznana odpowiedź kończy rundę. Niepoprawne próby można ponawiać do upływu czasu. Maksimum 700 pkt. W treningu zegar jest wyłączony.
+7 pytań, 3 sekundy na przeczytanie; tryb Klasyczny (wewnętrzny identyfikator radar): 25 s i poziomy 10/15/30/60/100; tryb Nisza: 20 s i 10/30/55/85/100. Pierwsza rozpoznana odpowiedź kończy rundę. Niepoprawne próby można ponawiać do upływu czasu. Maksimum 700 pkt. W treningu zegar jest wyłączony.
 Codzienne zestawy i archiwum liczone według Europe/Warsaw. Dzienna seria rośnie wyłącznie za ukończony zestaw dnia (nie za archiwum). Wyniki są przechowywane na urządzeniu.
-Radar wyników: siedem kierunków, po jednym na pytanie; im bliżej środka, tym rzadsze trafienie. Tabele rozwiązań pokazują poziomy redakcyjne, a nie realne udziały innych osób.
+Tarcza klubowa: każdy z siedmiu rzutów ma własny numer. Im bliżej środka, tym wyższy wynik. 100 punktów trafia w bullseye, zero poza pole gry. Klasyczne numery sektorów są dekoracją, nie zmieniają punktacji quizu. Kliknięcie lotki lub numeru w stojaku odsłania pytanie, odpowiedź i punkty. Dźwięk można wyłączyć; animacje uwzględniają preferencję ograniczonego ruchu. Tabele rozwiązań pokazują poziomy redakcyjne, a nie realne udziały innych osób.
 
 ## Zakres i ograniczenia
 Baza startowa jest autorska i ograniczona; nie jest kopią katalogów konkurencji. Poziomy to ręcznie przypisane szacunki rzadkości, a nie dane zbiorcze. Nie ma synchronizacji kont, płatności, globalnych rankingów, wieloosobowości ani serwera moderacji. Zgłoszenia zapisują się lokalnie i można je wyeksportować. Daty zestawów są deterministyczne, nie stanowią historycznych zestawów konkurencji. Tryb solo nie jest zabezpieczony przed podglądem odpowiedzi w kodzie.
