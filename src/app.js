@@ -7,7 +7,6 @@ let history=load("bullseye.history",[]),reports=load("bullseye.reports",[]),mode
 if(!rules[mode])mode="nisza";
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmt=n=>new Intl.NumberFormat("pl").format(n);
 const total=rows=>rows.reduce((s,r)=>s+r.points,0);
 const stop=()=>clearInterval(timer);
 function view(html){stop();app.innerHTML=html}
@@ -21,7 +20,7 @@ function sound(kind){
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+.17);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.18);
   }catch{}
 }
-function board(rows=[],animate=false,mode="nisza"){
+function board(rows=[],animate=false){
   return `<div class="board-cabinet"><div class="board-top"><span>KLUB BULLSEYE</span><span>01 / TOR</span></div><div class="board-light"></div>${dartboard(rows,animate)}<div class="board-caption">CELUJ W ŚRODEK · 100 PKT</div><div class="dart-rack">${Array.from({length:7},(_,i)=>`<button class="rack-slot ${rows[i]?"used":""}" data-dart="${i}" ${rows[i]?"":"disabled"} aria-label="Rzut ${i+1}${rows[i]?", "+rows[i].points+" punktów":""}"><span>${i+1}</span><b>${rows[i]?rows[i].points:"—"}</b></button>`).join("")}</div><div class="throw-note" role="status"> ${rows.length?"Wybierz numer lotki, aby zobaczyć trafienie.":"Siedem lotek czeka na rzut."}</div></div>`;
 }
 function bindBoard(rows){
@@ -38,13 +37,13 @@ app.querySelector("#daily").onclick=()=>done?results(done):start("daily",today);
 app.querySelector("#practice").onclick=()=>start("practice",today);
 app.querySelector("#archive").onsubmit=e=>{e.preventDefault();const date=app.querySelector("#date").value;const old=history.find(h=>h.date===date&&h.kind==="archive"&&h.mode===mode);old?results(old):start("archive",date)};
 }
-function start(kind,date){game={kind,date,mode,rows:[],questions:deck(questions,kind==="practice"?String(crypto.getRandomValues(new Uint32Array(1))[0]):date),index:0};round()}
+function start(kind,date){sound("hit");game={kind,date,mode,rows:[],questions:deck(questions,kind==="practice"?String(crypto.getRandomValues(new Uint32Array(1))[0]):date),index:0};round()}
 function round(){const q=game.questions[game.index],practice=game.kind==="practice";let active=practice,deadline=Date.now()+3000;view(`<div class="station-strip"><span><i class="lamp"></i> GRA W TOKU</span><span>${game.kind==="practice"?"TRENING":game.date}</span><span>RUNDA ${game.index+1}/7</span></div><div class="station"><section class="desk"><div class="hud"><div><small>RUNDA</small><strong>${game.index+1}<em>/7</em></strong></div><div><small>PUNKTY</small><strong>${total(game.rows)}</strong></div><div><small>CZAS</small><strong id="clock">${practice?"∞":"03"}</strong></div></div><div class="progress">${Array.from({length:7},(_,i)=>`<i class="${i<game.index?"complete":i===game.index?"current":""}"></i>`).join("")}</div><section class="ticket question"><div class="ticket-head">KARTA PYTANIA <span>${String(game.index+1).padStart(2,"0")} / ${esc(q.category)}</span></div><h1>${esc(q.prompt)}</h1><p>Podaj poprawną, możliwie rzadką odpowiedź.</p><form id="guess"><label for="response">WPISZ ODPOWIEDŹ / ENTER</label><div class="inputrow"><input id="response" autocomplete="off" maxlength="100" placeholder="…" required ${practice?"":"disabled"}><button class="primary" id="send" ${practice?"":"disabled"}>RZUĆ ▶</button></div></form><p id="feedback" role="status">${practice?"Bez limitu czasu":"Przeczytaj pytanie — za chwilę start."}</p><button id="skip" class="secondary">POMIŃ / PUDŁO</button></section><p class="footnote">Rzadkość: szacunek redakcyjny, nie statystyka innych graczy.</p></section><aside>${board(game.rows)}</aside></div>`);bindBoard(game.rows);
 const input=app.querySelector("#response"),send=app.querySelector("#send"),feedback=app.querySelector("#feedback"),clock=app.querySelector("#clock");
 if(practice)input.focus();
 app.querySelector("#guess").onsubmit=e=>{e.preventDefault();if(!active)return;if(!practice&&Date.now()>=deadline){finish(null,"");return}const a=answer(q,input.value);if(a){finish(a,input.value)}else{feedback.textContent="Nie rozpoznano odpowiedzi. Spróbuj innej!";input.select()}};
 app.querySelector("#skip").onclick=()=>finish(null,"");
-if(!practice)timer=setInterval(()=>{const now=Date.now();if(now>=deadline){if(!active){active=true;deadline=now+rules[game.mode].seconds*1000;input.disabled=false;send.disabled=false;input.focus();feedback.textContent="Czas na odpowiedź!"}else{finish(null,"");return}}clock.textContent=String(Math.ceil((deadline-now)/1000)).padStart(2,"0")},100);
+if(!practice)timer=setInterval(()=>{const now=Date.now();if(now>=deadline){if(!active){active=true;deadline=now+rules[game.mode].seconds*1000;input.disabled=false;send.disabled=false;input.focus();feedback.textContent="Czas na odpowiedź!"}else{finish(null,"");return}}const left=Math.ceil((deadline-now)/1000);clock.textContent=String(left).padStart(2,"0");clock.classList.toggle("urgent",active&&left<=5)},100);
 }
 function finish(a,guess){stop();const q=game.questions[game.index],points=score(a,game.mode);game.rows.push({id:q.id,guess,points,matched:a?.names[0]??null});view(`<div class="station-strip"><span><i class="lamp"></i> WERDYKT</span><span>RZUT ${game.index+1}/7</span><span>SUMA ${total(game.rows)} PKT</span></div><div class="station"><section class="desk"><div class="ticket reveal"><div class="ticket-head">KARTA TRAFIENIA <span>NR ${game.index+1}</span></div><div class="stamp ${points?"accepted":"rejected"}">${points===100?"BULLSEYE!":points?"TRAFIONY":"PUDŁO"}</div><div class="bigscore">+${points}<em> PKT</em></div><h2>${a?esc(a.names[0]):"Brak trafienia"}</h2><p>${points===100?"Maksymalna rzadkość.":points?"Odpowiedź przyjęta.":"Kolejna lotka czeka."}</p><button class="primary" id="next">${game.index===6?"ODBIERZ KARTĘ WYNIKU":"NASTĘPNA LOTKA"} ▶</button></div></section><aside>${board(game.rows,true)}</aside></div>`);bindBoard(game.rows);sound(points===100?"bull":points?"hit":"miss");
 app.querySelector("#next").onclick=()=>{if(++game.index<7){round();return}const record={kind:game.kind,date:game.date,mode:game.mode,rows:game.rows};history.push(record);save("bullseye.history",history);game=null;results(record)}}
